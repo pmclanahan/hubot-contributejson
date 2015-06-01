@@ -1,0 +1,28 @@
+{
+  "name": "hubot-contributejson",
+  "version": "0.1.0",
+  "description": "Welcome IRC visitors with info from your contribute.json",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmclanahan/hubot-contributejson.git"
+  },
+  "keywords": [
+    "hubot",
+    "hubot-scripts",
+    "contribute.json",
+    "welcome"
+  ],
+  "author": "Paul McLanahan <pmclanahan@gmail.com> (http://pmac.io)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/pmclanahan/hubot-contributejson/issues"
+  },
+  "homepage": "https://github.com/pmclanahan/hubot-contributejson",
+  "dependencies": {
+    "coffee-script": "^1.6.0"
+  }
+}
