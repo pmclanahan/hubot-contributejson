@@ -4,16 +4,32 @@ A hubot script for reading [contribute.json][] files, joining the IRC channel th
 and welcomeing visitors when the channel is quiet with useful information from
 the contribution data.
 
+This was heavily inspired by the excellent [WelcomeBot][] and the [contribute.json][] effort.
+
 Designed specifically for use with the hubot [IRC][] adaptor.
+
+## Features
+
+* Will wait for the configured amount of time (1 minute by default) before saying anything to a
+  new visitor.
+* If any more new visitors join during the wait period the timer will start over and the resulting
+  single message will welcome however many new users have joined.
+* If there is any conversation happening in the channel by users that are not new the bot will not
+  welcome anyone. It's meant to welcome users during quiet times.
+* Remembers every nick it sees (even nick changes) and won't greet anyone twice 
+  (remembers over a restart as well if a persistent brain is used).
+* Discovers who's in a channel when it joins and won't welcome any of them if they rejoin.
 
 ## Installation
 
 In your hubot project run `npm install --save hubot-contributejson`. Then add `"hubot-contributejson"`
-to your `external-scripts.json`. Also make sure `hubot-auth` is installed and in your
-`external-scripts.json` as well. You can optionally install `hubot-cronjob` to
+to your `external-scripts.json`. Also make sure [hubot-auth][] is installed and in your
+`external-scripts.json` as well. You can optionally install [hubot-cronjob][] to
 enable automatic updates for the contribute.json data nightly.
 
-It is **highly** recommended that you use a persistant hubot brain store (like [hubot-redis-brain][]).
+### NOTE
+
+It is ***highly*** recommended that you use a persistent hubot brain store (like [hubot-redis-brain][]).
 
 ## Configuration
 
@@ -52,6 +68,9 @@ following command: `<hubot>: <user> has contributejson role`. This will allow `<
     See the License for the specific language governing permissions and
     limitations under the License.
 
+[WelcomeBot]: https://github.com/shaunagm/WelcomeBot
 [contribute.json]: http://www.contributejson.org
 [IRC]: https://github.com/nandub/hubot-irc
 [hubot-redis-brain]: https://github.com/hubot-scripts/hubot-redis-brain/
+[hubot-auth]: https://github.com/hubot-scripts/hubot-auth
+[hubot-cronjob]: https://www.npmjs.com/package/hubot-cronjob
