@@ -24,5 +24,8 @@
   "homepage": "https://github.com/pmclanahan/hubot-contributejson",
   "dependencies": {
     "coffee-script": "^1.6.0"
+  },
+  "peerDependencies": {
+    "hubot": "2.x"
   }
 }
