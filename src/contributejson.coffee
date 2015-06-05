@@ -17,6 +17,8 @@
 #   hubot contributejson add <url>: Add a contribute.json URL to the list and join the channel in the file.
 #   hubot contributejson rm [url]: Remove a contribute.json URL from the list and leave the channel.
 #   hubot contributejson update [url]: Update the data for the contribute.json URL or channel.
+#   hubot welcoming approved: Enable welcome messages to new users in the channel.
+#   hubot welcoming denied: Disable welcome messages to new users in the channel. Will just learn nicks. (default state)
 #
 # Notes:
 #   * Commands require the user to have the "contributejson" role via the hubot-auth script.
@@ -54,13 +56,15 @@ class ContributeBot
     @joined_channels = false
 
     @robot.brain.on 'loaded', =>
-      robot.brain.data.contributebot ||= {}
+      @robot.brain.data.contributebot ||= {}
       # URL: contribute.json data
-      robot.brain.data.contributebot.data ||= {}
+      @robot.brain.data.contributebot.data ||= {}
       # channel: contribute.json URL
-      robot.brain.data.contributebot.channels ||= {}
+      @robot.brain.data.contributebot.channels ||= {}
+      # array of channels in which to avoid speaking
+      @robot.brain.data.contributebot.quiet_channels ||= []
       # channel: array of nicks
-      robot.brain.data.contributebot.users ||= {}
+      @robot.brain.data.contributebot.users ||= {}
       @brain = robot.brain.data.contributebot
       @init_listeners()
 
@@ -184,6 +188,11 @@ class ContributeBot
       unless room of self.brain.channels
         return
 
+      # if this is a quiet room, just remember the nick
+      if room in self.brain.quiet_channels
+        self.add_known_nicks(room, user.name)
+        return
+
       if user.name in self.brain.users[room]
         self.robot.logger.debug "Already know #{user.name}"
         return
@@ -292,15 +301,40 @@ class ContributeBot
           self.robot.adapter.join(irc_channel)
           res.reply "Joined #{irc_channel}."
           self.brain.channels[irc_channel] = cj_url
+          self.brain.quiet_channels.push irc_channel
+          res.reply "Set the channel as `quiet`. To enable welcoming tell me `welcoming approved` in the channel."
         else
           self.robot.logger.debug "Invalid contribute data: %j", data
           res.reply "Something has gone wrong. Check the logs."
+
+    @robot.respond /welcoming approved$/i, (res) ->
+      unless self.is_authorized(res)
+        return
+
+      {user, room} = res.message
+      if room in self.brain.quiet_channels
+        room_index = self.brain.quiet_channels.indexOf room
+        self.brain.quiet_channels.splice(room_index, 1)
+        res.reply "Welcoming enabled. Thanks."
+      else
+        res.reply "Was already enabled. Thanks."
+
+    @robot.respond /welcoming denied$/i, (res) ->
+      unless self.is_authorized(res)
+        return
+
+      {user, room} = res.message
+      if room in self.brain.quiet_channels
+        res.reply "Was already disabled. Thanks."
+      else
+        self.brain.quiet_channels.push room
+        res.reply "Welcoming disabled. Thanks."
 
     @robot.logger.debug "Listeners attached"
 
 
 module.exports = (robot) ->
-  welcome_wait = process.env.HUBOT_CONTRIBUTE_WELCOME_WAIT or 60
+  welcome_wait = parseInt(process.env.HUBOT_CONTRIBUTE_WELCOME_WAIT) or 60
   cb = new ContributeBot robot, welcome_wait
 
   if process.env.HUBOT_CONTRIBUTE_ENABLE_CRON?

@@ -19,6 +19,8 @@ Designed specifically for use with the hubot [IRC][] adaptor.
 * Remembers every nick it sees (even nick changes) and won't greet anyone twice 
   (remembers over a restart as well if a persistent brain is used).
 * Discovers who's in a channel when it joins and won't welcome any of them if they rejoin.
+* Defaults to quiet mode when it first enters a channel. Will just idle in the channel and learn
+  nicks. Say `welcoming approved` to it in the channel to have it start welcoming newcomers.
 
 ## Installation
 
@@ -51,6 +53,10 @@ following command: `<hubot>: <user> has contributejson role`. This will allow `<
 `<hubot>: contributejson rm [url]`: Remove a contribute.json URL from the list and leave the channel. If run from the desired channel the `[url]` is optional.
 
 `<hubot>: contributejson update [url]`: Update the data for the contribute.json URL or channel. If run from the desired channel the `[url]` is optional.
+
+`<hubot>: welcoming approved`: Enable welcome messages to new users in the channel.
+
+`<hubot>: welcoming denied`: Disable welcome messages to new users in the channel. Will just learn nicks. (default state)
 
 ## License
 
