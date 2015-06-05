@@ -143,23 +143,25 @@ class ContributeBot
 
   update_contribute_data: =>
     self = @
-    @robot.logger.debug 'Updating all contribute data.'
+    @robot.logger.info 'Updating all contribute data.'
     for cj_url, old_data of @brain.data
-      old_channel = get_irc_channel(old_data)
-      @get_contribute_json cj_url, (data) ->
-        if contribute_json_valid data
-          self.robot.logger.debug "Updated #{cj_url}"
-          self.brain.data[cj_url] = data
-          irc_channel = get_irc_channel(data)
-          unless irc_channel is old_channel
-            self.robot.adapter.join irc_channel
-            self.robot.adapter.part old_channel
-            self.brain.channels[irc_channel] = cj_url
-            delete self.brain.channels[old_channel]
-            delete self.brain.users[old_channel]
-        else
-          self.robot.logger.debug "Invalid contribute data: %j", data
-          res.reply "Something has gone wrong. Check the logs."
+      do (cj_url, old_data) ->
+        self.robot.logger.debug "old_data.name: #{old_data.name}"
+        old_channel = get_irc_channel(old_data)
+        self.robot.logger.debug "old_channel: #{old_channel}"
+        self.get_contribute_json cj_url, (data) ->
+          if contribute_json_valid data
+            self.robot.logger.debug "Updated #{cj_url}"
+            self.brain.data[cj_url] = data
+            irc_channel = get_irc_channel(data)
+            unless irc_channel is old_channel
+              self.robot.adapter.join irc_channel
+              self.robot.adapter.part old_channel
+              self.brain.channels[irc_channel] = cj_url
+              delete self.brain.channels[old_channel]
+              delete self.brain.users[old_channel]
+          else
+            self.robot.logger.error "Invalid contribute data: %j", data
 
   init_listeners: ->
     self = @
