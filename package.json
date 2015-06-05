@@ -1,6 +1,6 @@
 {
   "name": "hubot-contributejson",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Welcome IRC visitors with info from your contribute.json",
   "main": "index.coffee",
   "scripts": {
